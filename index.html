@@ -1,283 +1,114 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WALLED.Cuts | Wedding Cinema Portfolio</title>
+    <title>WALLED.Cuts | Wedding Cinema</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
     <style>
-        :root {
-            --gold: #d4af37;
-            --dark-bg: #050505;
-            --card-bg: #111111;
-        }
-
+        :root { --gold: #d4af37; --dark: #050505; --card: #111; }
         * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--dark); color: #fff; overflow-x: hidden; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            background-color: var(--dark-bg);
-            color: #fff;
-            line-height: 1.6;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-        }
-
-        /* Hero Section */
         header {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                        url('https://i.ibb.co/r2d0mfnv/C0373-3-00-00-08-49-Still005.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://i.ibb.co/r2d0mfnv/C0373-3-00-00-08-49-Still005.jpg');
+            background-size: cover; background-position: center; text-align: center; padding: 20px;
+        }
+        header h1 { font-size: clamp(2rem, 8vw, 4rem); color: var(--gold); margin: 0; letter-spacing: 5px; }
+
+        .section-title { text-align: center; margin: 40px 0; }
+        .section-title h2 { color: var(--gold); font-size: 1.8rem; border-bottom: 2px solid var(--gold); padding-bottom: 10px; display: inline-block; }
+
+        /* تعديل السلايدر للموبايل */
+        .comparison-container { width: 95%; max-width: 1000px; margin: 0 auto 60px; }
+        .ba-slider { 
+            position: relative; width: 100%; height: 0; padding-bottom: 56.25%; /* بيخلي الصورة تحافظ على أبعادها */
+            border-radius: 15px; overflow: hidden; border: 1px solid var(--gold); cursor: ew-resize;
+        }
+        .ba-slider img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .slider-overlay { width: 50%; border-right: 3px solid var(--gold); position: absolute; top: 0; left: 0; height: 100%; overflow: hidden; z-index: 2; }
+        .slider-handle { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 40px; height: 40px; background: var(--gold); border-radius: 50%; z-index: 10;
+            display: flex; justify-content: center; align-items: center; box-shadow: 0 0 10px #000;
         }
 
-        header h1 {
-            font-size: clamp(3rem, 10vw, 5.5rem);
-            margin: 0;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 8px;
+        /* تعديل شبكة الفيديوهات */
+        .gallery { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto; 
         }
-
-        header p {
-            font-size: 1.2rem;
-            letter-spacing: 4px;
-            opacity: 0.8;
-        }
-
-        /* Section Titles */
-        .section-title {
-            text-align: center;
-            margin: 100px 0 50px;
-        }
-
-        .section-title h2 {
-            font-size: 2.5rem;
-            color: var(--gold);
-            position: relative;
-            display: inline-block;
-            padding-bottom: 15px;
-        }
-
-        .section-title h2::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background: var(--gold);
-        }
-
-        /* Color Grading Slider */
-        .comparison-container {
-            max-width: 1100px;
-            margin: 0 auto 120px;
-            padding: 0 20px;
-        }
-
-        .ba-slider {
-            position: relative;
-            width: 100%;
-            height: 600px;
-            overflow: hidden;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            cursor: ew-resize;
-        }
-
-        .ba-slider img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0; left: 0;
-            pointer-events: none;
-        }
-
-        .slider-overlay {
-            width: 50%;
-            border-right: 4px solid var(--gold);
-            z-index: 2;
-            position: absolute;
-            top: 0; left: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .slider-handle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 45px;
-            height: 45px;
-            background: var(--gold);
-            border-radius: 50%;
-            z-index: 10;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            pointer-events: none;
-        }
-
-        /* Video Gallery - Grid System */
-        .gallery {
-            max-width: 1300px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 30px;
-            padding: 20px;
-        }
-
-        .video-card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.4s ease;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .video-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--gold);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
-        }
-
+        .video-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .video-info { padding: 15px; text-align: center; }
+        .video-info h3 { font-size: 1rem; color: var(--gold); margin: 0; }
 
-        .video-info { padding: 20px; text-align: center; }
-        .video-info h3 { margin: 0; font-size: 1.1rem; color: var(--gold); text-transform: uppercase; }
-
-        /* Footer */
-        footer {
-            padding: 100px 20px;
-            text-align: center;
-            background: linear-gradient(to top, #000, var(--dark-bg));
-        }
-
-        .btn-contact {
-            padding: 15px 45px;
-            font-size: 1.2rem;
-            color: #000;
-            background: var(--gold);
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            transition: 0.3s;
-            display: inline-block;
-        }
-
-        .btn-contact:hover {
-            background: #fff;
-            transform: scale(1.05);
-            box-shadow: 0 0 20px var(--gold);
-        }
-
-        @media (max-width: 768px) {
-            .gallery { grid-template-columns: 1fr; }
-            .ba-slider { height: 350px; }
+        footer { padding: 60px 20px; text-align: center; }
+        .btn-contact { 
+            background: var(--gold); color: #000; padding: 12px 30px; border-radius: 25px; 
+            text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1 data-aos="zoom-in">WALLED.Cuts</h1>
-        <p data-aos="fade-up" data-aos-delay="400">WEDDING CINEMATOGRAPHY EXCELLENCE</p>
+        <h1 data-aos="fade-down">WALLED.Cuts</h1>
+        <p data-aos="fade-up">Wedding Cinema Portfolio</p>
     </header>
 
-    <div class="section-title" data-aos="fade-up">
-        <h2>The Art of Grading</h2>
-    </div>
-
-    <section class="comparison-container" data-aos="fade-up">
-        <div class="ba-slider" id="main-slider">
-            <img src="https://i.ibb.co/r2d0mfnv/C0373-3-00-00-08-49-Still005.jpg" alt="After">
-            <div class="slider-overlay" id="before-img">
-                <img src="https://i.ibb.co/9kpK0C6G/C0373-3-00-00-08-49-Still004.jpg" style="width: 1100px;" alt="Before">
+    <div class="section-title"><h2>Color Grading</h2></div>
+    <section class="comparison-container">
+        <div class="ba-slider" id="slider">
+            <img src="https://i.ibb.co/r2d0mfnv/C0373-3-00-00-08-49-Still005.jpg">
+            <div class="slider-overlay" id="overlay">
+                <img src="https://i.ibb.co/9kpK0C6G/C0373-3-00-00-08-49-Still004.jpg" id="before-img">
             </div>
-            <div class="slider-handle" id="handle">
-                <span style="color:#000; font-weight:bold;">< ></span>
-            </div>
+            <div class="slider-handle" id="handle" style="pointer-events:none;"><b style="color:#000">< ></b></div>
         </div>
     </section>
 
-    <div class="section-title" data-aos="fade-up">
-        <h2>Cinematic Stories</h2>
-    </div>
-
+    <div class="section-title"><h2>Latest Films</h2></div>
     <div class="gallery">
-        <div class="video-card" data-aos="fade-up">
-            <div class="video-wrapper">
-                <iframe src="https://www.youtube-nocookie.com/embed/sbOovglzO1k" allowfullscreen></iframe>
-            </div>
-            <div class="video-info"><h3>Wedding Cinematic | Elegant Night</h3></div>
-        </div>
-
-        <div class="video-card" data-aos="fade-up" data-aos-delay="100">
-            <div class="video-wrapper">
-                <iframe src="https://www.youtube-nocookie.com/embed/jE99SJKp2g0" allowfullscreen></iframe>
-            </div>
-            <div class="video-info"><h3>Eternal Bond | Cinematic Story</h3></div>
-        </div>
-
-        <div class="video-card" data-aos="fade-up" data-aos-delay="200">
-            <div class="video-wrapper">
-                <iframe src="https://www.youtube-nocookie.com/embed/k-9ypytYCwk" allowfullscreen></iframe>
-            </div>
-            <div class="video-info"><h3>Golden Hour | Wedding Highlights</h3></div>
-        </div>
-
-        <div class="video-card" data-aos="fade-up" data-aos-delay="300">
-            <div class="video-wrapper">
-                <iframe src="https://www.youtube-nocookie.com/embed/jm-9OzMkje4" allowfullscreen></iframe>
-            </div>
-            <div class="video-info"><h3>Love Story | Save The Date</h3></div>
-        </div>
+        <div class="video-card" data-aos="fade-up"><div class="video-wrapper"><iframe src="https://www.youtube-nocookie.com/embed/sbOovglzO1k" allowfullscreen></iframe></div><div class="video-info"><h3>Elegant Night</h3></div></div>
+        <div class="video-card" data-aos="fade-up"><div class="video-wrapper"><iframe src="https://www.youtube-nocookie.com/embed/jE99SJKp2g0" allowfullscreen></iframe></div><div class="video-info"><h3>Eternal Bond</h3></div></div>
+        <div class="video-card" data-aos="fade-up"><div class="video-wrapper"><iframe src="https://www.youtube-nocookie.com/embed/k-9ypytYCwk" allowfullscreen></iframe></div><div class="video-info"><h3>Golden Hour</h3></div></div>
+        <div class="video-card" data-aos="fade-up"><div class="video-wrapper"><iframe src="https://www.youtube-nocookie.com/embed/jm-9OzMkje4" allowfullscreen></iframe></div><div class="video-info"><h3>Love Story</h3></div></div>
     </div>
 
     <footer>
-        <h2 data-aos="fade-up">Transforming Moments Into Masterpieces</h2>
-        <br>
-        <a href="https://wa.me/201061381467" class="btn-contact" data-aos="zoom-in">Book Your Film</a>
-        <p style="margin-top: 50px; opacity: 0.3;">WALLED.Cuts &copy; 2026</p>
+        <a href="https://wa.me/201061381467" class="btn-contact">Book Now on WhatsApp</a>
+        <p style="margin-top:40px; opacity:0.3">WALLED.Cuts &copy; 2026</p>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script>
-        AOS.init({ duration: 1000, once: true });
-
-        const slider = document.getElementById('main-slider');
-        const beforeImg = document.getElementById('before-img');
+        AOS.init({ duration: 800, once: true });
+        const slider = document.getElementById('slider');
+        const overlay = document.getElementById('overlay');
         const handle = document.getElementById('handle');
+        const beforeImg = document.getElementById('before-img');
 
-        const moveSlider = (e) => {
-            let x = (e.type.includes('mouse')) ? e.clientX : e.touches[0].clientX;
+        function move(e) {
             let rect = slider.getBoundingClientRect();
-            let position = ((x - rect.left) / rect.width) * 100;
-            
-            if (position >= 0 && position <= 100) {
-                beforeImg.style.width = position + "%";
-                handle.style.left = position + "%";
+            let x = (e.pageX || e.touches[0].pageX) - rect.left;
+            let pos = (x / rect.width) * 100;
+            if (pos >= 0 && pos <= 100) {
+                overlay.style.width = pos + "%";
+                handle.style.left = pos + "%";
             }
-        };
-
-        slider.addEventListener('mousemove', moveSlider);
-        slider.addEventListener('touchmove', moveSlider);
+        }
+        // إضافة مستمعي الأحداث للموبايل والكمبيوتر
+        slider.addEventListener('mousemove', move);
+        slider.addEventListener('touchmove', move);
+        
+        // تعديل عرض الصورة الداخلية لتطابق عرض السلايدر دائماً
+        window.addEventListener('resize', () => {
+            beforeImg.style.width = slider.offsetWidth + "px";
+        });
+        beforeImg.style.width = slider.offsetWidth + "px";
     </script>
 </body>
 </html>
