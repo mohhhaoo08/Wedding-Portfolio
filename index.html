@@ -1,114 +1,592 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WALLED.Cuts | Wedding Cinema</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>إدارة حسابات تيم التصوير أونلاين</title>
+    <!-- ربط مكتبات Firebase الرسمية والأمنية -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root { --gold: #d4af37; --dark: #050505; --card: #111; }
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--dark); color: #fff; overflow-x: hidden; }
-
-        header {
-            height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://i.ibb.co/r2d0mfnv/C0373-3-00-00-08-49-Still005.jpg');
-            background-size: cover; background-position: center; text-align: center; padding: 20px;
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --old-data: #64748b;
         }
-        header h1 { font-size: clamp(2rem, 8vw, 4rem); color: var(--gold); margin: 0; letter-spacing: 5px; }
-
-        .section-title { text-align: center; margin: 40px 0; }
-        .section-title h2 { color: var(--gold); font-size: 1.8rem; border-bottom: 2px solid var(--gold); padding-bottom: 10px; display: inline-block; }
-
-        /* تعديل السلايدر للموبايل */
-        .comparison-container { width: 95%; max-width: 1000px; margin: 0 auto 60px; }
-        .ba-slider { 
-            position: relative; width: 100%; height: 0; padding-bottom: 56.25%; /* بيخلي الصورة تحافظ على أبعادها */
-            border-radius: 15px; overflow: hidden; border: 1px solid var(--gold); cursor: ew-resize;
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
-        .ba-slider img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
-        .slider-overlay { width: 50%; border-right: 3px solid var(--gold); position: absolute; top: 0; left: 0; height: 100%; overflow: hidden; z-index: 2; }
-        .slider-handle { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 40px; height: 40px; background: var(--gold); border-radius: 50%; z-index: 10;
-            display: flex; justify-content: center; align-items: center; box-shadow: 0 0 10px #000;
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 12px;
+        }
+        .container {
+            max-width: 1350px;
+            margin: 0 auto;
+        }
+        h1 { font-size: 22px; text-align: center; color: var(--primary); margin-top: 10px; margin-bottom: 5px; }
+        h2 { font-size: 18px; text-align: center; color: var(--primary); margin-top: 5px; }
+        h3 { font-size: 15px; color: var(--old-data); margin-top: 20px; border-bottom: 2px dashed #cbd5e1; padding-bottom: 5px; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-card {
+            background: var(--surface);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--primary);
+        }
+        .stat-card.debt { border-top-color: var(--danger); }
+        .stat-card.income { border-top-color: var(--success); }
+        .stat-card div:first-child { font-size: 11px; color: #64748b; font-weight: bold; }
+        .stat-number { font-size: 16px; font-weight: bold; margin-top: 5px; color: var(--text); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group.dynamic-field {
+            display: none;
+            background: #f1f5f9;
+            padding: 10px;
+            border-radius: 6px;
+            border-right: 4px solid var(--warning);
+        }
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { opacity: 0.9; }
+        
+        .btn-archive, .btn-collect, .btn-delete, .btn-edit { 
+            padding: 8px 12px; 
+            font-size: 13px; 
+            width: 100%; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold;
+            margin: 2px 0;
+        }
+        .btn-archive { background: var(--success); }
+        .btn-collect { background: var(--warning); }
+        .btn-edit { background: #4b5563; } /* لون رمادي لزرار التعديل */
+        .btn-delete { background: var(--danger); }
+        
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 700px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 10px 8px;
+            font-size: 13px;
+            text-align: center;
+        }
+        th { background: #f1f5f9; font-weight: bold; }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .badge-photo { background: #dbeafe; color: #1e40af; }
+        .badge-video { background: #fef3c7; color: #92400e; }
+        .badge-media { background: #e9d5ff; color: #6b21a8; }
+        .badge-assist { background: #e2e8f0; color: #475569; }
+
+        .text-date { font-size: 11px; color: #64748b; font-weight: bold; background: #f1f5f9; padding: 2px 4px; border-radius: 4px; }
+        .text-count { font-size: 11px; color: var(--warning); display: block; font-weight: bold; margin-top: 2px; }
+        .actions-cell { display: flex; flex-direction: column; gap: 4px; justify-content: center; align-items: center; }
+        .old-row { background-color: #f8fafc; color: #475569; }
+        
+        #syncStatus {
+            text-align: center;
+            font-size: 12px;
+            color: var(--success);
+            margin-bottom: 12px;
+            font-weight: bold;
         }
 
-        /* تعديل شبكة الفيديوهات */
-        .gallery { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto; 
-        }
-        .video-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; }
-        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .video-info { padding: 15px; text-align: center; }
-        .video-info h3 { font-size: 1rem; color: var(--gold); margin: 0; }
-
-        footer { padding: 60px 20px; text-align: center; }
-        .btn-contact { 
-            background: var(--gold); color: #000; padding: 12px 30px; border-radius: 25px; 
-            text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s;
+        @media(min-width: 768px) {
+            body { padding: 20px; }
+            h1 { font-size: 28px; }
+            h2 { font-size: 22px; }
+            .stat-card div:first-child { font-size: 13px; }
+            .stat-number { font-size: 22px; }
+            .btn-archive, .btn-collect, .btn-delete, .btn-edit { width: auto; margin: 0 2px; }
+            .actions-cell { flex-direction: row; gap: 5px; }
+            th, td { padding: 12px; font-size: 14px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1 data-aos="fade-down">WALLED.Cuts</h1>
-        <p data-aos="fade-up">Wedding Cinema Portfolio</p>
-    </header>
-
-    <div class="section-title"><h2>Color Grading</h2></div>
-    <section class="comparison-container">
-        <div class="ba-slider" id="slider">
-            <img src="https://i.ibb.co/r2d0mfnv/C0373-3-00-00-08-49-Still005.jpg">
-            <div class="slider-overlay" id="overlay">
-                <img src="https://i.ibb.co/9kpK0C6G/C0373-3-00-00-08-49-Still004.jpg" id="before-img">
-            </div>
-            <div class="slider-handle" id="handle" style="pointer-events:none;"><b style="color:#000">< ></b></div>
+<div class="container">
+    <h1>📸 نظام حسابات تيم التصوير السحابي المؤمن</h1>
+    <div id="syncStatus">🔄 جاري الاتصال بخزنة التيم الخاصة...</div>
+    
+    <!-- لوحة التقارير السريعة -->
+    <div class="stats-grid">
+        <div class="stat-card debt">
+            <div>يوميات لم تدفع</div>
+            <div class="stat-number" id="totalTeamDebt">0 ج.م</div>
         </div>
-    </section>
+        <div class="stat-card income">
+            <div>باقي حسابات العرسان</div>
+            <div class="stat-number" id="totalWeddingIncome">0 ج.م</div>
+        </div>
+        <div class="stat-card">
+            <div>مصاريف الأرشيف</div>
+            <div class="stat-number" id="totalArchived">0 ج.م</div>
+        </div>
+    </div>
+    
+    <!-- قسم المدخلات -->
+    <div class="grid">
+        <div class="card">
+            <h2>تسجيل يومية مصور</h2>
+            <div class="form-group">
+                <label>اسم الفرد:</label>
+                <input type="text" id="photographerName" placeholder="مثال: أحمد علي">
+            </div>
+            <div class="form-group">
+                <label>نوع التخصص / الدور:</label>
+                <select id="memberType" onchange="toggleCountField()">
+                    <option value="فوتوغرافر">فوتوغرافر</option>
+                    <option value="فيديوغرافر">فيديوغرافر</option>
+                    <option value="ميديا">ميديا</option>
+                    <option value="اسيست">اسيست</option>
+                </select>
+            </div>
+            
+            <div class="form-group dynamic-field" id="countFieldWrapper">
+                <label id="countLabel">عدد الفيديوهات / الأوردرات:</label>
+                <input type="number" id="workCount" value="1" min="1">
+            </div>
 
-    <div class="section-title"><h2>Latest Films</h2></div>
-    <div class="gallery">
-        <div class="video-card" data-aos="fade-up"><div class="video-wrapper"><iframe src="https://www.youtube-nocookie.com/embed/sbOovglzO1k" allowfullscreen></iframe></div><div class="video-info"><h3>Elegant Night</h3></div></div>
-        <div class="video-card" data-aos="fade-up"><div class="video-wrapper"><iframe src="https://www.youtube-nocookie.com/embed/jE99SJKp2g0" allowfullscreen></iframe></div><div class="video-info"><h3>Eternal Bond</h3></div></div>
-        <div class="video-card" data-aos="fade-up"><div class="video-wrapper"><iframe src="https://www.youtube-nocookie.com/embed/k-9ypytYCwk" allowfullscreen></iframe></div><div class="video-info"><h3>Golden Hour</h3></div></div>
-        <div class="video-card" data-aos="fade-up"><div class="video-wrapper"><iframe src="https://www.youtube-nocookie.com/embed/jm-9OzMkje4" allowfullscreen></iframe></div><div class="video-info"><h3>Love Story</h3></div></div>
+            <div class="form-group">
+                <label id="rateLabel">اليومية الأساسية الثابتة (جنيه):</label>
+                <input type="number" id="dailyRate" value="0" min="0">
+            </div>
+            <div class="form-group">
+                <label>العلاوة / البونص (إن وجد):</label>
+                <input type="number" id="bonus" value="0" min="0">
+            </div>
+            <div class="form-group" style="background: #fff5f5; padding: 10px; border-radius: 6px; border-right: 4px solid var(--danger);">
+                <label style="color: var(--danger);">الخصومات / السِلف (جنيه):</label>
+                <input type="number" id="discount" value="0" min="0">
+            </div>
+            <button onclick="addDay()">حفظ الحسبة أونلاين 🌐</button>
+        </div>
+
+        <div class="card">
+            <h2>متابعة حسابات العرسان</h2>
+            <div class="form-group">
+                <label>اسم العريس/العروسة:</label>
+                <input type="text" id="weddingName" placeholder="مثال: سيشن محمد وآية">
+            </div>
+            <div class="form-group">
+                <label>إجمالي الحساب (جنيه):</label>
+                <input type="number" id="totalAmount" value="0" min="0">
+            </div>
+            <div class="form-group">
+                <label>المقدم المدفوع (جنيه):</label>
+                <input type="number" id="paidAmount" value="0" min="0">
+            </div>
+            <button onclick="addWedding()">تسجيل الأوردر أونلاين 🌐</button>
+        </div>
     </div>
 
-    <footer>
-        <a href="https://wa.me/201061381467" class="btn-contact">Book Now on WhatsApp</a>
-        <p style="margin-top:40px; opacity:0.3">WALLED.Cuts &copy; 2026</p>
-    </footer>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script>
-        AOS.init({ duration: 800, once: true });
-        const slider = document.getElementById('slider');
-        const overlay = document.getElementById('overlay');
-        const handle = document.getElementById('handle');
-        const beforeImg = document.getElementById('before-img');
-
-        function move(e) {
-            let rect = slider.getBoundingClientRect();
-            let x = (e.pageX || e.touches[0].pageX) - rect.left;
-            let pos = (x / rect.width) * 100;
-            if (pos >= 0 && pos <= 100) {
-                overlay.style.width = pos + "%";
-                handle.style.left = pos + "%";
-            }
-        }
-        // إضافة مستمعي الأحداث للموبايل والكمبيوتر
-        slider.addEventListener('mousemove', move);
-        slider.addEventListener('touchmove', move);
+    <!-- الجداول -->
+    <div class="card" style="margin-bottom: 25px;">
+        <h2>💵 يوميات المصورين الحالية والقديمة</h2>
         
-        // تعديل عرض الصورة الداخلية لتطابق عرض السلايدر دائماً
-        window.addEventListener('resize', () => {
-            beforeImg.style.width = slider.offsetWidth + "px";
+        <h3>⏱️ مستحقات شغل اليوم</h3>
+        <div class="table-responsive">
+            <table id="todayTeamTable">
+                <thead><tr><th>الاسم</th><th>التخصص</th><th>التاريخ</th><th>سعر الفئة</th><th>العلاوة</th><th>الخصم</th><th>صافي الإجمالي</th><th>التحكم</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        
+        <h3>⏳ حسابات الأيام السابقة</h3>
+        <div class="table-responsive">
+            <table id="oldTeamTable">
+                <thead><tr><th>الاسم</th><th>التخصص</th><th>التاريخ القديم</th><th>سعر الفئة</th><th>العلاوة</th><th>الخصم</th><th>صافي الإجمالي</th><th>التحكم</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 25px;">
+        <h2>💍 حسابات العرسان والأوردرات</h2>
+        
+        <h3>⏱️ أوردرات وحجوزات اليوم</h3>
+        <div class="table-responsive">
+            <table id="todayWeddingTable">
+                <thead><tr><th>المناسبة</th><th>التاريخ</th><th>الحساب الكلي</th><th>المدفوع</th><th>المتبقي</th><th>التحكم</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        
+        <h3>⏳ حسابات الأيام السابقة</h3>
+        <div class="table-responsive">
+            <table id="oldWeddingTable">
+                <thead><tr><th>المناسبة</th><th>التاريخ القديم</th><th>الحساب الكلي</th><th>المدفوع</th><th>المتبقي</th><th>التحكم</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📦 أرشيف الحسابات المقفلة بالكامل</h2>
+        <div class="table-responsive">
+            <table id="archiveTable">
+                <thead><tr><th>الاسم / الأوردر</th><th>الدور/النوع</th><th>المبلغ المستلم النهائي</th><th>تاريخ التصفية</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <button onclick="clearArchive()" class="btn-delete" style="width: auto; padding: 8px 15px; margin-top: 10px; font-size: 13px;">تفريغ الأرشيف تماماً</button>
+    </div>
+</div>
+
+<script>
+    // ربط قاعدة البيانات الخاصة بيك
+    const firebaseConfig = {
+        databaseURL: "https://my-ph-56743-default-rtdb.firebaseio.com/"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let teamDays = {};
+    let weddings = {};
+    let archive = {};
+
+    db.ref().on('value', (snapshot) => {
+        const data = snapshot.val() || {};
+        teamDays = data.teamDays || {};
+        weddings = data.weddings || {};
+        archive = data.archive || {};
+        document.getElementById('syncStatus').innerText = "✅ متصل أونلاين ومزامن بأمان مع خزنة التيم";
+        renderAll();
+    }, (error) => {
+        document.getElementById('syncStatus').innerText = "❌ خطأ في الاتصال بالخزنة المأمنة!";
+    });
+
+    function getTodayDateString() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function toggleCountField() {
+        const type = document.getElementById('memberType').value;
+        const countWrapper = document.getElementById('countFieldWrapper');
+        const rateLabel = document.getElementById('rateLabel');
+        if(type === 'فيديوغرافر') {
+            countWrapper.style.display = 'block';
+            rateLabel.innerText = 'حساب الفيديو الواحد الفردي (جنيه):';
+        } else {
+            countWrapper.style.display = 'none';
+            document.getElementById('workCount').value = '1';
+            rateLabel.innerText = 'اليومية الأساسية الثابتة (جنيه):';
+        }
+    }
+
+    function getBadgeClass(type) {
+        switch(type) {
+            case 'فوتوغرافر': return 'badge-photo';
+            case 'فيديوغرافر': return 'badge-video';
+            case 'ميديا': return 'badge-media';
+            case 'اسيست': return 'badge-assist';
+            default: return 'badge-assist';
+        }
+    }
+
+    function addDay() {
+        const name = document.getElementById('photographerName').value.trim();
+        const type = document.getElementById('memberType').value;
+        const rate = parseFloat(document.getElementById('dailyRate').value) || 0;
+        const count = parseInt(document.getElementById('workCount').value) || 1;
+        const bonus = parseFloat(document.getElementById('bonus').value) || 0;
+        const discount = parseFloat(document.getElementById('discount').value) || 0;
+
+        if(!name) return alert('اكتب اسم الشخص الأول يا صاحبي');
+
+        const newId = Date.now();
+        db.ref('teamDays/' + newId).set({
+            id: newId, name, type, rate, count, bonus, discount, date: getTodayDateString()
         });
-        beforeImg.style.width = slider.offsetWidth + "px";
-    </script>
+        
+        document.getElementById('photographerName').value = '';
+        document.getElementById('dailyRate').value = '0';
+        document.getElementById('workCount').value = '1';
+        document.getElementById('bonus').value = '0';
+        document.getElementById('discount').value = '0';
+        toggleCountField();
+    }
+
+    function addWedding() {
+        const name = document.getElementById('weddingName').value.trim();
+        const total = parseFloat(document.getElementById('totalAmount').value) || 0;
+        const paid = parseFloat(document.getElementById('paidAmount').value) || 0;
+
+        if(!name) return alert('اكتب اسم العريس أو الحجز أولاً');
+
+        const newId = Date.now();
+        db.ref('weddings/' + newId).set({
+            id: newId, name, total, paid, date: getTodayDateString()
+        });
+
+        document.getElementById('weddingName').value = '';
+        document.getElementById('totalAmount').value = '0';
+        document.getElementById('paidAmount').value = '0';
+    }
+
+    // ✏️ دالة تعديل بيانات المصور قبل التصفية ✏️
+    function editMember(id) {
+        const member = teamDays[id];
+        if(!member) return;
+
+        const newName = prompt("تعديل الاسم:", member.name);
+        if (newName === null) return; // إلغاء التعديل
+
+        const newRate = prompt("تعديل السعر/اليومية (جنيه):", member.rate);
+        if (newRate === null) return;
+
+        const newBonus = prompt("تعديل العلاوة/البونص (جنيه):", member.bonus || 0);
+        if (newBonus === null) return;
+
+        const newDiscount = prompt("تعديل الخصومات/السِلف (جنيه):", member.discount || 0);
+        if (newDiscount === null) return;
+
+        let newCount = member.count || 1;
+        if(member.type === 'فيديوغرافر') {
+            newCount = prompt("تعديل عدد الفيديوهات:", member.count || 1);
+            if (newCount === null) return;
+        }
+
+        // تحديث البيانات في الـ Firebase علطول
+        db.ref('teamDays/' + id).update({
+            name: newName.trim(),
+            rate: parseFloat(newRate) || 0,
+            bonus: parseFloat(newBonus) || 0,
+            discount: parseFloat(newDiscount) || 0,
+            count: parseInt(newCount) || 1
+        });
+    }
+
+    // ✏️ دالة تعديل بيانات العرسان قبل التصفية ✏️
+    function editWedding(id) {
+        const w = weddings[id];
+        if(!w) return;
+
+        const newName = prompt("تعديل اسم المناسبة/العريس:", w.name);
+        if (newName === null) return;
+
+        const newTotal = prompt("تعديل إجمالي الحساب (جنيه):", w.total);
+        if (newTotal === null) return;
+
+        const newPaid = prompt("تعديل المقدم المدفوع (جنيه):", w.paid);
+        if (newPaid === null) return;
+
+        // تحديث في الـ Firebase
+        db.ref('weddings/' + id).update({
+            name: newName.trim(),
+            total: parseFloat(newTotal) || 0,
+            paid: parseFloat(newPaid) || 0
+        });
+    }
+
+    function archiveMember(id) {
+        const member = teamDays[id];
+        if(!member) return;
+        const count = member.count || 1;
+        const total = (member.rate * count) + (member.bonus || 0) - (member.discount || 0);
+        
+        if(confirm(`هل أنت متأكد من دفع الصافي (${total} ج.م) لـ ${member.name} ونقله للأرشيف؟`)) {
+            let archiveType = member.type;
+            if(member.type === 'فيديوغرافر' && count > 1) archiveType += ` (${count} فيديوهات)`;
+
+            const newArchiveId = Date.now();
+            db.ref('archive/' + newArchiveId).set({
+                name: member.name, type: archiveType, total: total, date: getTodayDateString()
+            });
+            db.ref('teamDays/' + id).remove();
+        }
+    }
+
+    function collectRemainingWedding(id) {
+        const w = weddings[id];
+        if(!w) return;
+        const remaining = w.total - w.paid;
+        
+        if(confirm(`هل تم تحصيل باقي الحساب (${remaining} ج.م)؟`)) {
+            const newArchiveId = Date.now();
+            db.ref('archive/' + newArchiveId).set({
+                name: w.name, type: "أوردر عريس (مكتمل)", total: w.total, date: getTodayDateString()
+            });
+            db.ref('weddings/' + id).remove();
+        }
+    }
+
+    function deleteWedding(id) {
+        if(confirm('هل أنت متأكد من حذف هذا الحجز نهائياً؟')) {
+            db.ref('weddings/' + id).remove();
+        }
+    }
+
+    function clearArchive() {
+        if(confirm('هل تريد مسح الأرشيف نهائياً للتيم كله؟')) {
+            db.ref('archive').remove();
+        }
+    }
+
+    function renderAll() {
+        const todayStr = getTodayDateString();
+        let totalTeamDebt = 0;
+        let totalWeddingIncome = 0;
+        let totalArchivedSum = 0;
+
+        const todayTeamBody = document.querySelector('#todayTeamTable tbody');
+        const oldTeamBody = document.querySelector('#oldTeamTable tbody');
+        todayTeamBody.innerHTML = ''; oldTeamBody.innerHTML = '';
+
+        Object.values(teamDays).forEach(item => {
+            const count = item.count || 1;
+            const total = (item.rate * count) + (item.bonus || 0) - (item.discount || 0);
+            totalTeamDebt += total;
+            const badgeClass = getBadgeClass(item.type);
+            const countInfo = (item.type === 'فيديوغرافر' && count > 1) ? `<span class="text-count">عدد الأوردرات: ${count}</span>` : '';
+
+            const rowHTML = `
+                <tr>
+                    <td><b>${item.name}</b></td>
+                    <td><span class="badge ${badgeClass}">${item.type}</span> ${countInfo}</td>
+                    <td><span class="text-date">📅 ${item.date}</span></td>
+                    <td>${item.rate} ج.م ${count > 1 ? `<small>(للواحد)</small>` : ''}</td>
+                    <td>${item.bonus || 0} ج.م</td>
+                    <td style="color:var(--danger);">${item.discount || 0} ج.م</td>
+                    <td style="color:var(--primary); font-weight:bold;">${total} ج.م</td>
+                    <td>
+                        <div class="actions-cell">
+                            <button class="btn-edit" onclick="editMember('${item.id}')">تعديل ✏️</button>
+                            <button class="btn-archive" onclick="archiveMember('${item.id}')">تصفية ✅</button>
+                        </div>
+                    </td>
+                </tr>`;
+            
+            if (item.date === todayStr) todayTeamBody.innerHTML += rowHTML;
+            else oldTeamBody.innerHTML += rowHTML.replace('<tr>', '<tr class="old-row">');
+        });
+
+        const todayWeddingBody = document.querySelector('#todayWeddingTable tbody');
+        const oldWeddingBody = document.querySelector('#oldWeddingTable tbody');
+        todayWeddingBody.innerHTML = ''; oldWeddingBody.innerHTML = '';
+
+        Object.values(weddings).forEach(w => {
+            const remaining = w.total - w.paid;
+            if(remaining > 0) totalWeddingIncome += remaining;
+
+            const rowHTML = `
+                <tr>
+                    <td><b>${w.name}</b></td>
+                    <td><span class="text-date">📅 ${w.date}</span></td>
+                    <td>${w.total} ج.م</td>
+                    <td>${w.paid} ج.م</td>
+                    <td style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}; font-weight:bold;">${remaining} ج.م</td>
+                    <td>
+                        <div class="actions-cell">
+                            <button class="btn-edit" onclick="editWedding('${w.id}')">تعديل ✏️</button>
+                            ${remaining > 0 ? `<button class="btn-collect" onclick="collectRemainingWedding('${w.id}')">تحصيل 💵</button>` : ''}
+                            <button class="btn-delete" onclick="deleteWedding('${w.id}')">حذف ❌</button>
+                        </div>
+                    </td>
+                </tr>`;
+
+            if (w.date === todayStr) todayWeddingBody.innerHTML += rowHTML;
+            else oldWeddingBody.innerHTML += rowHTML.replace('<tr>', '<tr class="old-row">');
+        });
+
+        const archiveBody = document.querySelector('#archiveTable tbody');
+        archiveBody.innerHTML = '';
+        Object.values(archive).reverse().forEach(item => {
+            totalArchivedSum += item.total;
+            let archBadge = item.type.includes('أوردر') ? '' : `badge ${getBadgeClass(item.type.split(' ')[0])}`;
+            archiveBody.innerHTML += `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${archBadge ? `<span class="${archBadge}">${item.type}</span>` : `<small>${item.type}</small>`}</td>
+                    <td style="color:var(--success); font-weight:bold;">${item.total} ج.م</td>
+                    <td><span class="text-date">📅 ${item.date}</span></td>
+                </tr>`;
+        });
+
+        document.getElementById('totalTeamDebt').innerText = totalTeamDebt + ' ج.م';
+        document.getElementById('totalWeddingIncome').innerText = totalWeddingIncome + ' ج.م';
+        document.getElementById('totalArchived').innerText = totalArchivedSum + ' ج.م';
+    }
+</script>
 </body>
 </html>
